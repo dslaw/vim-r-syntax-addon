@@ -39,11 +39,52 @@ start_packages <- c('base', 'graphics', 'grDevices',
 out <- sapply(start_packages, require, quietly = TRUE,
               character.only = TRUE)
 
-base <- sort(format_output(
-                filter_operators(
-                    Filter(check_function,
-                        function_names(start_packages)))))
+base <- format_output(
+            sort(filter_operators(
+                Filter(check_function,
+                    function_names(start_packages)))))
 
 write(paste0(c('" Builtins', base), collapse = '\n'),
     file = 'r.vim')
+
+
+# Parallel - ships with R
+included <- c('parallel')
+
+out <- sapply(included, require, quietly = TRUE,
+              character.only = TRUE)
+
+incl <- format_output(
+            sort(filter_operators(
+                Filter(check_function,
+                    function_names(included)))))
+
+write(paste0(c('\n" Included packages', incl), collapse = '\n'),
+    file = 'r.vim', append = TRUE)
+
+
+# Additional packages
+pkgs <- c('devtools', 'dplyr', 'ggplot2', 'lubridate',
+          'packrat', 'reshape2', 'stringr', 'testthat')
+
+out <- sapply(pkgs, require, quietly = TRUE, character.only = TRUE,
+              warn.conflicts = FALSE)
+
+additional <- sort(
+                filter_operators(
+                    Filter(check_function,
+                        function_names(pkgs))))
+
+additional <- setdiff(additional, c(base, incl))
+additional <- paste0(additional, collapse = ' ')
+
+write('\n" Additional packages', file = 'r.vim', append = TRUE)
+write(paste0(c( 'r link rFunctionExtra Typedef', additional), collapse = ' '),
+      file = 'r.vim', append = TRUE)
+
+
+# Import package - used as a namespace
+write(paste0(c('\n" Import package',
+               'syn keyword rPreProc import'), collapse = '\n'),
+      file = 'r.vim', append = TRUE)
 
