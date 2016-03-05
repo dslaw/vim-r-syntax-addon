@@ -79,7 +79,8 @@ additional <- setdiff(additional, c(base, incl))
 additional <- paste0(additional, collapse = ' ')
 
 write('\n" Additional packages', file = 'r.vim', append = TRUE)
-write(paste0(c( 'r link rFunctionExtra Typedef', additional), collapse = ' '),
+write('hi def link rFunctionExtra Typedef', file = 'r.vim', append = TRUE)
+write(paste0(c('syn keyword rFunctionExtra', additional), collapse = ' '),
       file = 'r.vim', append = TRUE)
 
 
