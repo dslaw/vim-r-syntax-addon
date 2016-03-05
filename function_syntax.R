@@ -79,13 +79,12 @@ additional <- setdiff(additional, c(base, incl))
 additional <- paste0(additional, collapse = ' ')
 
 write('\n" Additional packages', file = 'r.vim', append = TRUE)
-write('hi def link rFunctionExtra Typedef', file = 'r.vim', append = TRUE)
-write(paste0(c('syn keyword rFunctionExtra', additional), collapse = ' '),
+write('hi def link rFunctionAddon Typedef', file = 'r.vim', append = TRUE)
+write(paste0(c('syn keyword rFunctionAddon', additional), collapse = ' '),
       file = 'r.vim', append = TRUE)
 
 
 # Import package - used as a namespace
-write(paste0(c('\n" Import package',
-               'syn keyword rPreProc import'), collapse = '\n'),
-      file = 'r.vim', append = TRUE)
+import <- c('\n" Import package', 'syn match rPreProc "import:\\{2,3}\\(from\\|here\\|into\\)"')
+write(paste0(import, collapse = '\n'), file = 'r.vim', append = TRUE)
 
