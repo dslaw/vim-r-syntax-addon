@@ -1,70 +1,41 @@
 #!/usr/bin/env Rscript
 
-# Get object names from packages
-function_names <- function(pkgs) {
-    pkg_search <- paste0('package:', as.character(pkgs))
-    functions <- lapply(pkg_search, ls)
-    functions <- unlist(functions, recursive = TRUE)
-    return(functions)
-}
 
-check_function <- function(x) {
-    is.function(get(x))
-}
+argv <- commandArgs(trailingOnly = TRUE)
 
-# Remove operator s3 methods, including LHS assignment
-# ex: `+.Date`, `[[<-.data.frame`
-# Hidden objects are also removed ex: `.mapply`
-filter_operators <- function(x) {
-    operator <- grepl('^[^a-zA-Z]', x)
-    objs <- x[!operator]
-    return(objs)
-}
-
-# Create a single line for syntax file
-format_output <- function(functions) {
-    vim_syntax <- 'syn keyword rFunction'
-    collapsed <- paste(c(vim_syntax, functions), collapse = ' ')
-    return(collapsed)
-}
-
-
+source('utils.R')
 
 # Leave off included datasets (`dataset` package)
 # This includes packages not covered by the function "builtins"
 start_packages <- c('base', 'graphics', 'grDevices',
                     'methods', 'stats', 'utils')
 
+# Parallel - ships with R but is not loaded at startup
+included_packages <- c('parallel')
+
 # Ensure packages are loaded
-out <- sapply(start_packages, require, quietly = TRUE,
-              character.only = TRUE)
+out <- sapply(c(start_packages, included_packages), require,
+              quietly = TRUE, character.only = TRUE)
 
 base <- format_output(
             sort(filter_operators(
                 Filter(check_function,
                     function_names(start_packages)))))
 
-write(paste0(c('" Builtins', base), collapse = '\n'),
-    file = 'r.vim')
-
-
-# Parallel - ships with R
-included <- c('parallel')
-
-out <- sapply(included, require, quietly = TRUE,
-              character.only = TRUE)
+base_formatted <- paste0(c('" Builtins', base), collapse = '\n')
+#write(base_formatted, file = 'r.vim')
 
 incl <- format_output(
             sort(filter_operators(
                 Filter(check_function,
-                    function_names(included)))))
+                    function_names(included_packages)))))
 
-write(paste0(c('\n" Included packages', incl), collapse = '\n'),
-    file = 'r.vim', append = TRUE)
+incl_formatted <- paste0(c('" Included packages', incl), collapse = '\n')
+#write(incl_formatted, file = 'r.vim', append = TRUE)
 
 
 # Additional packages
-pkgs <- c('devtools', 'dplyr', 'ggplot2', 'lubridate',
+pkgs <- c('devtools', 'dplyr', 'ggplot2', 'lubridate', 'logging',
           'packrat', 'reshape2', 'stringr', 'testthat')
 
 out <- sapply(pkgs, require, quietly = TRUE, character.only = TRUE,
@@ -75,13 +46,20 @@ additional <- sort(
                     Filter(check_function,
                         function_names(pkgs))))
 
-additional <- setdiff(additional, c(base, incl))
+additional <- setdiff(additional, c(ssplit(base), ssplit(incl)))
 additional <- paste0(additional, collapse = ' ')
 
-write('\n" Additional packages', file = 'r.vim', append = TRUE)
-write('hi def link rFunctionAddon Typedef', file = 'r.vim', append = TRUE)
-write(paste0(c('syn keyword rFunctionAddon', additional), collapse = ' '),
-      file = 'r.vim', append = TRUE)
+additional_formatted <- paste0(c('syn keyword rFunctionAddon', additional),
+                               collapse = ' ')
+additional_text <- paste0(c('" Additional packages',
+                            'hi def link rFunctionAddon Typedef',
+                            additional_formatted),
+                          collapse = '\n')
+
+#write('\n" Additional packages', file = 'r.vim', append = TRUE)
+#write('hi def link rFunctionAddon Typedef', file = 'r.vim', append = TRUE)
+#write(paste0(c('syn keyword rFunctionAddon', additional), collapse = ' '),
+#      file = 'r.vim', append = TRUE)
 
 
 # Import package - used as a namespace
