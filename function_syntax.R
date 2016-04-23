@@ -22,6 +22,24 @@ base <- format_output(
                 Filter(check_function,
                     function_names(start_packages)))))
 
+# Remove keywords already defined in `r.vim`
+syntax_def <- c(# rStatement
+                'break', 'next', 'return',
+                # rConditional
+                'if', 'else',
+                # rRepeat
+                'for', 'in', 'repeat', 'while',
+                # rConstant
+                'T', 'F', 'LETTERS', 'letters', 'month.abb', 'month.name', 'pi', 'R.version.string',
+                # rPreProc
+                'library', 'require', 'attach', 'detach', 'source',
+                # rType
+                'array', 'category', 'character', 'complex', 'double', 'function',
+                'integer', 'list', 'logical', 'matrix', 'numeric', 'vector', 'data.frame'
+                )
+base <- base[!(base %in% syntax_def)]
+
+
 base_formatted <- paste0(c('" Builtins', base), collapse = '\n')
 #write(base_formatted, file = 'r.vim')
 
