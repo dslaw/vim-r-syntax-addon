@@ -3,7 +3,7 @@ function_names <- function(pkgs) {
     pkg_search <- paste0('package:', as.character(pkgs))
     functions <- lapply(pkg_search, ls)
     functions <- unlist(functions, recursive = TRUE)
-    return(functions)
+    functions
 }
 
 check_function <- function(x) {
@@ -15,16 +15,17 @@ check_function <- function(x) {
 # Hidden objects are also removed ex: `.mapply`
 filter_operators <- function(x) {
     operator <- grepl('^[^a-zA-Z]', x)
-    objs <- x[!operator]
-    return(objs)
+    x[!operator]
 }
 
 # Create a single line for syntax file
 format_output <- function(functions) {
     vim_syntax <- 'syn keyword rFunction'
     collapsed <- paste0(c(vim_syntax, functions), collapse = ' ')
-    return(collapsed)
+    collapsed
 }
 
-ssplit <- function(x) strsplit(x, ' ')[[1]]
+ssplit <- function(x) {
+    strsplit(x, ' ')[[1]]
+}
 

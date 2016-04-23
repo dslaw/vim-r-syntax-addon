@@ -41,7 +41,7 @@ base <- base[!(base %in% syntax_def)]
 
 
 base_formatted <- paste0(c('" Builtins', base), collapse = '\n')
-#write(base_formatted, file = 'r.vim')
+write(base_formatted, file = 'r.vim')
 
 incl <- format_output(
             sort(filter_operators(
@@ -49,7 +49,7 @@ incl <- format_output(
                     function_names(included_packages)))))
 
 incl_formatted <- paste0(c('" Included packages', incl), collapse = '\n')
-#write(incl_formatted, file = 'r.vim', append = TRUE)
+write(incl_formatted, file = 'r.vim', append = TRUE)
 
 
 # Additional packages
