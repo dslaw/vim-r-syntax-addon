@@ -20,6 +20,23 @@ functions <- unlist(functions, recursive = TRUE)
 operator <- grepl('^[^a-zA-Z]', functions)
 functions <- functions[!operator]
 
+# Remove keywords already defined in `r.vim`
+syntax_def <- c(# rStatement
+                'break', 'next', 'return',
+                # rConditional
+                'if', 'else',
+                # rRepeat
+                'for', 'in', 'repeat', 'while',
+                # rConstant
+                'T', 'F', 'LETTERS', 'letters', 'month.abb', 'month.name', 'pi', 'R.version.string',
+                # rPreProc
+                'library', 'require', 'attach', 'detach', 'source',
+                # rType
+                'array', 'category', 'character', 'complex', 'double', 'function',
+                'integer', 'list', 'logical', 'matrix', 'numeric', 'vector', 'data.frame'
+                )
+functions <- functions[!(functions %in% syntax_def)]
+
 # Create single line for syntax file
 vim_syntax <- 'syn keyword rFunction'
 collapsed <- paste(c(vim_syntax, functions), collapse = ' ')
